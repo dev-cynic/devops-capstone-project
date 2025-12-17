@@ -149,3 +149,45 @@ class TestAccountService(TestCase):
         
         # Assert that the response status code is 404_NOT_FOUND
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_account(self):
+        """It should Update an existing Account"""
+        # Create an account first
+        account = AccountFactory()
+        account.create()
+        
+        # Update the account data
+        new_data = account.serialize()
+        new_data["phone_number"] = "999-888-7777"
+        
+        # Make a PUT request to update the account
+        resp = self.client.put(
+            f"/accounts/{account.id}",
+            json=new_data,
+            content_type="application/json"
+        )
+        
+        # Assert that the response status code is 200_OK
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+        # Get the updated data from the response
+        updated_data = resp.get_json()
+        
+        # Assert that the phone number was updated
+        self.assertEqual(updated_data["phone_number"], "999-888-7777")
+
+    def test_update_account_not_found(self):
+        """It should return 404 when updating a non-existent account"""
+        # Create some data
+        fake_account = AccountFactory()
+        data = fake_account.serialize()
+        
+        # Make a PUT request with a non-existent account ID
+        resp = self.client.put(
+            "/accounts/0",
+            json=data,
+            content_type="application/json"
+        )
+        
+        # Assert that the response status code is 404_NOT_FOUND
+        self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
