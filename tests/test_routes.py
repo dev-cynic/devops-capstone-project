@@ -207,3 +207,34 @@ class TestAccountService(TestCase):
         # Try to read the deleted account - should return 404
         resp = self.client.get(f"/accounts/{account.id}")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_list_accounts(self):
+        """It should List all Accounts"""
+        # Create multiple accounts
+        self._create_accounts(5)
+        
+        # Make a GET request to list all accounts
+        resp = self.client.get("/accounts")
+        
+        # Assert that the response status code is 200_OK
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+        # Get the data from the response
+        data = resp.get_json()
+        
+        # Assert that we got 5 accounts back
+        self.assertEqual(len(data), 5)
+
+    def test_list_empty_accounts(self):
+        """It should return an empty list when there are no accounts"""
+        # Make a GET request to list all accounts (should be empty)
+        resp = self.client.get("/accounts")
+        
+        # Assert that the response status code is 200_OK
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        
+        # Get the data from the response
+        data = resp.get_json()
+        
+        # Assert that we got an empty list
+        self.assertEqual(data, [])
