@@ -38,6 +38,7 @@ class TestAccountService(TestCase):
     @classmethod
     def tearDownClass(cls):
         """Runs once before test suite"""
+        pass
 
     def setUp(self):
         """Runs before each test"""
@@ -127,16 +128,16 @@ class TestAccountService(TestCase):
         """It should Read an Account that exists"""
         account = AccountFactory()
         account.create()
-        
+
         # Make a GET request to read the account
         resp = self.client.get(f"/accounts/{account.id}")
-        
+
         # Assert that the response status code is 200_OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         # Get the data from the response
         data = resp.get_json()
-        
+
         # Assert that the data matches what we created
         self.assertEqual(data["name"], account.name)
         self.assertEqual(data["email"], account.email)
@@ -146,7 +147,7 @@ class TestAccountService(TestCase):
         """It should return 404 when reading a non-existent account"""
         # Make a GET request with a non-existent account ID
         resp = self.client.get("/accounts/0")
-        
+
         # Assert that the response status code is 404_NOT_FOUND
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -155,24 +156,24 @@ class TestAccountService(TestCase):
         # Create an account first
         account = AccountFactory()
         account.create()
-        
+
         # Update the account data
         new_data = account.serialize()
         new_data["phone_number"] = "999-888-7777"
-        
+
         # Make a PUT request to update the account
         resp = self.client.put(
             f"/accounts/{account.id}",
             json=new_data,
             content_type="application/json"
         )
-        
+
         # Assert that the response status code is 200_OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         # Get the updated data from the response
         updated_data = resp.get_json()
-        
+
         # Assert that the phone number was updated
         self.assertEqual(updated_data["phone_number"], "999-888-7777")
 
@@ -181,14 +182,14 @@ class TestAccountService(TestCase):
         # Create some data
         fake_account = AccountFactory()
         data = fake_account.serialize()
-        
+
         # Make a PUT request with a non-existent account ID
         resp = self.client.put(
             "/accounts/0",
             json=data,
             content_type="application/json"
         )
-        
+
         # Assert that the response status code is 404_NOT_FOUND
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -197,13 +198,13 @@ class TestAccountService(TestCase):
         # Create an account first
         account = AccountFactory()
         account.create()
-        
+
         # Make a DELETE request
         resp = self.client.delete(f"/accounts/{account.id}")
-        
+
         # Assert that the response status code is 204_NO_CONTENT
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
-        
+
         # Try to read the deleted account - should return 404
         resp = self.client.get(f"/accounts/{account.id}")
         self.assertEqual(resp.status_code, status.HTTP_404_NOT_FOUND)
@@ -212,16 +213,16 @@ class TestAccountService(TestCase):
         """It should List all Accounts"""
         # Create multiple accounts
         self._create_accounts(5)
-        
+
         # Make a GET request to list all accounts
         resp = self.client.get("/accounts")
-        
+
         # Assert that the response status code is 200_OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         # Get the data from the response
         data = resp.get_json()
-        
+
         # Assert that we got 5 accounts back
         self.assertEqual(len(data), 5)
 
@@ -229,12 +230,12 @@ class TestAccountService(TestCase):
         """It should return an empty list when there are no accounts"""
         # Make a GET request to list all accounts (should be empty)
         resp = self.client.get("/accounts")
-        
+
         # Assert that the response status code is 200_OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         # Get the data from the response
         data = resp.get_json()
-        
+
         # Assert that we got an empty list
         self.assertEqual(data, [])
