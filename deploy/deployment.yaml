@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accounts
+  labels:
+    app: accounts
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: accounts
+  template:
+    metadata:
+      labels:
+        app: accounts
+    spec:
+      containers:
+      - name: accounts
+        image: us.icr.io/sn-labs-lynncynic/accounts:1
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DATABASE_URI
+          value: "postgresql://postgres:$(POSTGRES_PASSWORD)@postgresql:5432/postgres"
+        envFrom:
+        - secretRef:
+            name: postgresql
