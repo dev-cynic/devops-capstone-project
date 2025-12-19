@@ -255,11 +255,10 @@ class TestAccountService(TestCase):
         self.assertEqual(resp.headers.get('Content-Security-Policy'), "default-src 'self'; object-src 'none'")
         self.assertEqual(resp.headers.get('Referrer-Policy'), 'strict-origin-when-cross-origin')
 
-    
     def test_cors_headers(self):
         """It should return CORS headers when using HTTPS"""
         resp = self.client.get("/", environ_overrides=HTTPS_ENVIRON)
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        
+
         # Check for CORS header
         self.assertEqual(resp.headers.get('Access-Control-Allow-Origin'), '*')

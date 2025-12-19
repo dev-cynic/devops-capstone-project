@@ -16,12 +16,14 @@ spec:
     spec:
       containers:
       - name: accounts
-        image: us.icr.io/sn-labs-lynncynic/accounts:1
+        image: IMAGE_NAME_HERE
         ports:
         - containerPort: 8080
         env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql
+              key: database-password
         - name: DATABASE_URI
           value: "postgresql://postgres:$(POSTGRES_PASSWORD)@postgresql:5432/postgres"
-        envFrom:
-        - secretRef:
-            name: postgresql
